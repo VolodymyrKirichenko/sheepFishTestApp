@@ -1,104 +1,85 @@
-import { StyleSheet, TextInput } from 'react-native';
-import { FC, memo, useState } from 'react';
+import { FC, memo } from 'react';
+import { useFormik } from 'formik';
+import * as Yup from 'yup';
 import { Item } from '../typedefs';
-import { Button } from '../components/ui/Button';
-import { Field } from '../components/ui/Field';
+import { Button } from './ui/Button';
+import { Field } from './ui/Field';
 
 interface Props {
-  addHandler: (el: Item) => void,
+  addHandler: (el: Item) => void;
 }
+
+interface FormValues {
+  name: string;
+  overview: string;
+  imageURL: string;
+  amount: number;
+}
+
+const validationSchema = Yup.object().shape({
+  name: Yup.string().required('Name is required'),
+  overview: Yup.string().required('Overview is required'),
+  amount: Yup.number().required('Amount is required'),
+  imageURL: Yup.string().required('Image URL is required'),
+});
 
 export const Form: FC<Props> = memo((props) => {
   const { addHandler } = props;
 
-  const [name, setName] = useState('');
-  const [overview, setOverview] = useState('');
-  const [imageURL, setImageURL] = useState('');
-  const [amount, setAmount] = useState(0);
+  const formik = useFormik<FormValues>({
+    initialValues: {
+      name: '',
+      overview: '',
+      imageURL: '',
+      amount: 0,
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      const newItem: Item = {
+        id: new Date().getTime().toString(),
+        title: values.name,
+        description: values.overview,
+        image: values.imageURL,
+        price: values.amount,
+      };
 
-  const onAdd = () => {
-    const newItem = {
-      id: new Date().getTime().toString(),
-      title: name,
-      description: overview,
-      image: imageURL,
-      price: amount
-    };
-
-    addHandler(newItem);
-    setName('');
-    setOverview('');
-    setImageURL('');
-    setAmount(0);
-  };
+      addHandler(newItem);
+      formik.resetForm();
+    },
+  });
 
   return (
     <>
       <Field
         placeholder="Name"
-        val={name}
-        setValue={setName}
+        val={formik.values.name}
+        setValue={formik.handleChange('name')}
+        error={formik.touched.name && formik.errors.name ? formik.errors.name : ''}
       />
-
-      {/*<TextInput*/}
-      {/*  style={styles.input}*/}
-      {/*  placeholder="Name"*/}
-      {/*  value={name}*/}
-      {/*  onChangeText={(text) => setName(text)}*/}
-      {/*/>*/}
 
       <Field
         placeholder="Overview"
-        val={overview}
-        setValue={setOverview}
+        val={formik.values.overview}
+        setValue={formik.handleChange('overview')}
+        error={formik.touched.overview && formik.errors.overview ? formik.errors.overview : ''}
       />
-
-      {/*<TextInput*/}
-      {/*  style={styles.input}*/}
-      {/*  placeholder="Overview"*/}
-      {/*  value={overview}*/}
-      {/*  onChangeText={(text) => setOverview(text)}*/}
-      {/*/>*/}
 
       <Field
         placeholder="Amount"
-        val={String(amount)}
-        setValue={setAmount}
+        val={formik.values.amount.toString()}
+        setValue={formik.handleChange('amount')}
         keyboardType="numeric"
+        error={formik.touched.amount && formik.errors.amount ? formik.errors.amount : ''}
       />
-
-      {/*<TextInput*/}
-      {/*  style={styles.input}*/}
-      {/*  placeholder="Amount"*/}
-      {/*  value={String(amount)}*/}
-      {/*  onChangeText={(text) => setAmount(Number(text))}*/}
-      {/*  keyboardType="numeric"*/}
-      {/*/>*/}
 
       <Field
         placeholder="Image URL"
-        val={imageURL}
-        setValue={setImageURL}
+        val={formik.values.imageURL}
+        setValue={formik.handleChange('imageURL')}
+        error={formik.touched.imageURL && formik.errors.imageURL ? formik.errors.imageURL : ''}
       />
 
-      {/*<TextInput*/}
-      {/*  style={styles.input}*/}
-      {/*  placeholder="Image URL"*/}
-      {/*  value={imageURL}*/}
-      {/*  onChangeText={(text) => setImageURL(text)}*/}
-      {/*/>*/}
-
-      <Button title="Додати" onPress={onAdd} />
+      <Button title="Додати" onPress={formik.handleSubmit} />
     </>
   );
-})
-
-const styles = StyleSheet.create({
-  input: {
-    height: 40,
-    borderColor: 'gray',
-    borderWidth: 1,
-    marginBottom: 10,
-    paddingHorizontal: 10,
-  },
 });

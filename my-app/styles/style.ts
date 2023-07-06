@@ -13,7 +13,8 @@ export const gStyle = StyleSheet.create({
     textAlign: 'center',
   },
   image: {
-    width: '100%',
+    width: '40%',
     height: 200,
+    resizeMode: 'contain'
   }
 })

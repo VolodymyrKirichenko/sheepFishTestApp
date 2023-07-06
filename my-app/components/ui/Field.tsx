@@ -1,11 +1,12 @@
-import { TextInput, StyleSheet, View, KeyboardTypeOptions } from 'react-native'
-import { FC } from 'react'
+import { TextInput, StyleSheet, View, KeyboardTypeOptions, Text } from 'react-native';
+import { FC } from 'react';
 
 interface Props {
-  setValue?: any
-  val?: string
-  placeholder: string
-  keyboardType?: KeyboardTypeOptions | undefined
+  setValue?: (text: string) => void;
+  val?: string;
+  placeholder: string;
+  keyboardType?: KeyboardTypeOptions;
+  error: string;
 }
 
 export const Field: FC<Props> = (props) => {
@@ -14,21 +15,24 @@ export const Field: FC<Props> = (props) => {
     placeholder,
     val,
     keyboardType,
-  } = props
+    error
+  } = props;
 
   return (
     <View style={styles.inputContainer}>
       <TextInput
-        style={styles.input}
+        style={[styles.input]}
         showSoftInputOnFocus={true}
         placeholder={placeholder}
-        onChangeText={(text) => setValue(text)}
+        onChangeText={setValue}
         value={val}
         autoCapitalize='none'
         keyboardType={keyboardType}
       />
+
+      {error && <Text style={styles.errorText}>{error}</Text>}
     </View>
-  )
+  );
 }
 
 const styles = StyleSheet.create({
@@ -45,10 +49,14 @@ const styles = StyleSheet.create({
     padding: 10,
     flex: 1
   },
-  icon: {
-    marginLeft: 10,
+  inputError: {
+    borderColor: 'red',
+    borderWidth: 1
+  },
+  errorText: {
+    color: 'red',
+    marginTop: 5,
     position: 'absolute',
-    top: '50%',
-    right: 20
+    right: 10
   }
-})
+});
