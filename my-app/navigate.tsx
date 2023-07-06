@@ -16,7 +16,7 @@ export default function Navigate() {
           options={{
             title: 'MainPage',
             headerStyle: {
-              backgroundColor: '#eb5d3d',
+              backgroundColor: '#FBBF24',
               height: 110,
             },
           }}
@@ -28,7 +28,7 @@ export default function Navigate() {
           options={{
             title: 'FullInfo',
             headerStyle: {
-              backgroundColor: '#eb5d3d',
+              backgroundColor: '#FBBF24',
               height: 110,
             },
           }}
