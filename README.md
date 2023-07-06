@@ -5,6 +5,7 @@ Technologies Used
 The project utilizes the following technologies:
 
 - Redux
+- Redux Toolkit
 - Formik
 - Yup
 - React Native
