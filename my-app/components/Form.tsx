@@ -1,6 +1,8 @@
-import { StyleSheet, TextInput, Button } from 'react-native';
-import React, { FC, memo, useState } from 'react';
+import { StyleSheet, TextInput } from 'react-native';
+import { FC, memo, useState } from 'react';
 import { Item } from '../typedefs';
+import { Button } from '../components/ui/Button';
+import { Field } from '../components/ui/Field';
 
 interface Props {
   addHandler: (el: Item) => void,
@@ -32,34 +34,59 @@ export const Form: FC<Props> = memo((props) => {
 
   return (
     <>
-      <TextInput
-        style={styles.input}
+      <Field
         placeholder="Name"
-        value={name}
-        onChangeText={(text) => setName(text)}
+        val={name}
+        setValue={setName}
       />
 
-      <TextInput
-        style={styles.input}
+      {/*<TextInput*/}
+      {/*  style={styles.input}*/}
+      {/*  placeholder="Name"*/}
+      {/*  value={name}*/}
+      {/*  onChangeText={(text) => setName(text)}*/}
+      {/*/>*/}
+
+      <Field
         placeholder="Overview"
-        value={overview}
-        onChangeText={(text) => setOverview(text)}
+        val={overview}
+        setValue={setOverview}
       />
 
-      <TextInput
-        style={styles.input}
+      {/*<TextInput*/}
+      {/*  style={styles.input}*/}
+      {/*  placeholder="Overview"*/}
+      {/*  value={overview}*/}
+      {/*  onChangeText={(text) => setOverview(text)}*/}
+      {/*/>*/}
+
+      <Field
         placeholder="Amount"
-        value={String(amount)}
-        onChangeText={(text) => setAmount(Number(text))}
+        val={String(amount)}
+        setValue={setAmount}
         keyboardType="numeric"
       />
 
-      <TextInput
-        style={styles.input}
+      {/*<TextInput*/}
+      {/*  style={styles.input}*/}
+      {/*  placeholder="Amount"*/}
+      {/*  value={String(amount)}*/}
+      {/*  onChangeText={(text) => setAmount(Number(text))}*/}
+      {/*  keyboardType="numeric"*/}
+      {/*/>*/}
+
+      <Field
         placeholder="Image URL"
-        value={imageURL}
-        onChangeText={(text) => setImageURL(text)}
+        val={imageURL}
+        setValue={setImageURL}
       />
+
+      {/*<TextInput*/}
+      {/*  style={styles.input}*/}
+      {/*  placeholder="Image URL"*/}
+      {/*  value={imageURL}*/}
+      {/*  onChangeText={(text) => setImageURL(text)}*/}
+      {/*/>*/}
 
       <Button title="Додати" onPress={onAdd} />
     </>
