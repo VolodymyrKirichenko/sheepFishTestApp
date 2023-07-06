@@ -1,44 +1,51 @@
-import { Alert, Button, StyleSheet } from 'react-native';
-import {
-  View,
-  Text,
-  FlatList,
-} from 'react-native';
-import { gStyle } from '../styles/style';
-import { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { View, Text, FlatList, StyleSheet, Alert } from 'react-native';
+import { RootState } from '../redux/reducers';
+import { addProduct, removeProduct, setProductList } from '../redux/actions';
 import { Form } from './Form';
 import { ListItems } from './ListItems';
+import { Product } from '../redux/actions/types';
 import { Item } from '../typedefs';
 import axios from 'axios';
 import useData from '../hooks/useAsyncStorage';
+import { gStyle } from '../styles/style';
+import { Button } from '../components/ui/Button';
 
-export default function Main({ navigation }: any) {
-  const loadScene = (item: Item) => {
-    navigation.navigate('FullInfo', item)
-  }
+interface MainProps {
+  navigation: any;
+}
 
-  const { data: productList, setData: setProductList, saveData } = useData(
-    'productList',
-    []
-  );
-
-  console.log(productList)
-
+export const Main: React.FC<MainProps> = ({ navigation }) => {
   const [items, setItems] = useState<Item[]>([]);
   const [isFormVisible, setIsFormVisible] = useState(false);
 
-  const handleAddProduct = useCallback((el: Item) => {
-    const updatedList = [...productList];
-    updatedList.push(el);
-    setProductList(updatedList);
+  const productList = useSelector((state: RootState) => state.productList);
+  const dispatch = useDispatch();
+  const { data: productData, saveData } = useData('productList', []);
 
-    saveData(updatedList);
-  }, [productList, setProductList, saveData]);
+  console.log(productData);
+
+  const loadScene = (item: Item) => {
+    navigation.navigate('FullInfo', item);
+  };
+
+  const handleAddProduct = (el: Item) => {
+    const newProduct: Product = {
+      id: el.id,
+      title: el.title,
+      description: el.description,
+      image: el.image,
+      price: el.price,
+    };
+
+    dispatch(addProduct(newProduct));
+    saveData([...productList, newProduct]);
+  };
 
   const handleRemoveProduct = (productId: string) => {
-    const updatedList = productList.filter((product: any) => product.id !== productId);
-
-    setProductList(updatedList);
+    dispatch(removeProduct(productId));
+    const updatedList = productList.filter((product: Product) => product.id !== productId);
     saveData(updatedList);
   };
 
@@ -47,49 +54,46 @@ export default function Main({ navigation }: any) {
       const response = await axios.get('https://fakestoreapi.com/products');
       const products = response.data;
 
-      setItems(products);
+      dispatch(setProductList(products));
     } catch (error) {
       console.log('Error fetching products:', error);
     }
   };
 
   useEffect(() => {
-    if (productList.length > 0) {
-      setItems(productList);
+    if (productData.length > 0) {
+      setItems(productData);
     } else {
       fetchProducts();
     }
   }, [productList]);
 
   const handleChangeShowForm = () => {
-    setIsFormVisible((prevState) => !prevState)
-  }
+    setIsFormVisible((prevState) => !prevState);
+  };
 
   const handleShowForm = () => {
     Alert.alert(
       isFormVisible ? 'Close Form' : 'Show Form',
       isFormVisible ? 'Do you want to close the form?' : 'Do you want to show the form?',
-    [
-      {
-        text: 'No',
-        onPress: () => {},
-        style: 'cancel',
-      },
-      {
-        text: 'Yes',
-        onPress: handleChangeShowForm,
-      },
-    ],
-    { cancelable: false }
+      [
+        {
+          text: 'No',
+          onPress: () => {},
+          style: 'cancel',
+        },
+        {
+          text: 'Yes',
+          onPress: handleChangeShowForm,
+        },
+      ],
+      { cancelable: false }
     );
   };
 
-
   return (
     <View style={gStyle.main}>
-      <Text style={[gStyle.title, styles.header]}>
-        Список товарів
-      </Text>
+      <Text style={[gStyle.title, styles.header]}>Список товарів</Text>
 
       <View style={styles.buttonContainer}>
         <Button
@@ -98,9 +102,7 @@ export default function Main({ navigation }: any) {
         />
       </View>
 
-      {isFormVisible && (
-        <Form addHandler={handleAddProduct} />
-      )}
+      {isFormVisible && <Form addHandler={handleAddProduct} />}
 
       <FlatList
         data={items}
@@ -111,16 +113,16 @@ export default function Main({ navigation }: any) {
             loadScene={loadScene}
           />
         )}
-        keyExtractor={item => item.id}
+        keyExtractor={(item) => item.id}
         showsVerticalScrollIndicator={false}
       />
     </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
   header: {
-    marginBottom: 30,
+    marginBottom: 10,
   },
   itemImage: {
     width: 200,
@@ -130,3 +132,5 @@ const styles = StyleSheet.create({
     marginBottom: 20,
   },
 });
+
+export default Main;

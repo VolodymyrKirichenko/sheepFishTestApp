@@ -9,7 +9,7 @@ export const gStyle = StyleSheet.create({
     fontSize: 25,
     color: '#333',
     fontFamily: 'mt-bold',
-    marginTop: 25,
+    marginTop: 10,
     textAlign: 'center',
   },
   image: {
